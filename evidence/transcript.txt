@@ -1,0 +1,148 @@
+
+$ git init -b main
+Initialized empty Git repository in /workspace/scratch/b2ce57ca3ed8/emergency-stash-demo/run-hw9nkx/repository/.git/
+
+$ git add app.py feature.py
+
+$ git commit -m Initial\ demo\ application\ and\ tracked\ feature\ placeholder
+[main (root-commit) 19787fb] Initial demo application and tracked feature placeholder
+ 2 files changed, 3 insertions(+)
+ create mode 100644 app.py
+ create mode 100644 feature.py
+
+$ git switch -c feature/expense-summary
+Switched to a new branch 'feature/expense-summary'
+
+$ git diff --numstat
+20	0	feature.py
+
+$ git diff
+diff --git a/feature.py b/feature.py
+index 97fe8cd..c5cf4c4 100644
+--- a/feature.py
++++ b/feature.py
+@@ -1 +1,21 @@
+ # Feature workspace: expense summary
++def expense_summary(expenses):
++    totals = {}
++    count = 0
++    largest = 0
++    for expense in expenses:
++        category = expense.get("category", "Other")
++        amount = expense.get("amount", 0)
++        totals.setdefault(category, 0)
++        totals[category] += amount
++        count += 1
++        largest = max(largest, amount)
++    grand_total = sum(totals.values())
++    average = grand_total / count if count else 0
++    report = {}
++    report["totals"] = totals
++    report["count"] = count
++    report["largest"] = largest
++    report["average"] = average
++    report["grand_total"] = grand_total
++    raise NotImplementedError("Finish formatting and returning the report")
+
+$ git status
+On branch feature/expense-summary
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   feature.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+=== 1: Exactly 20 added lines, unfinished and unstaged ===
+
+$ git stash push -m WIP:\ 20-line\ expense\ summary\ before\ urgent\ fix
+Saved working directory and index state On feature/expense-summary: WIP: 20-line expense summary before urgent fix
+
+$ git stash list
+stash@{0}: On feature/expense-summary: WIP: 20-line expense summary before urgent fix
+
+$ git status
+On branch feature/expense-summary
+nothing to commit, working tree clean
+
+$ git switch main
+Switched to branch 'main'
+
+$ git status
+On branch main
+nothing to commit, working tree clean
+
+=== 2: Stash exists; main is clean before the emergency fix ===
+
+$ git diff
+diff --git a/app.py b/app.py
+index 3d50b59..811045e 100644
+--- a/app.py
++++ b/app.py
+@@ -1,2 +1,4 @@
+ def average(values):
++    if not values:
++        return 0
+     return sum(values) / len(values)
+
+$ git add app.py
+
+$ git commit -m Fix\ emergency\ empty-list\ division\ by\ zero
+[main b5d419c] Fix emergency empty-list division by zero
+ 1 file changed, 2 insertions(+)
+
+$ git status
+On branch main
+nothing to commit, working tree clean
+
+$ git stash list
+stash@{0}: On feature/expense-summary: WIP: 20-line expense summary before urgent fix
+
+=== 3: Emergency fix committed; main is clean; stash retained ===
+
+$ git switch feature/expense-summary
+Switched to branch 'feature/expense-summary'
+
+$ git stash list
+stash@{0}: On feature/expense-summary: WIP: 20-line expense summary before urgent fix
+
+$ git stash pop
+On branch feature/expense-summary
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   feature.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Dropped refs/stash@{0} (cbf35ba52fddb381df609626aa3fac9e3b3d1f4c)
+
+$ git stash list
+
+$ git status
+On branch feature/expense-summary
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   feature.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+$ git diff --numstat
+20	0	feature.py
+
+$ cmp /workspace/scratch/b2ce57ca3ed8/emergency-stash-demo/run-hw9nkx/feature-before.py feature.py
+
+$ cmp /workspace/scratch/b2ce57ca3ed8/emergency-stash-demo/run-hw9nkx/before.patch /workspace/scratch/b2ce57ca3ed8/emergency-stash-demo/run-hw9nkx/after.patch
+
+PASS: identical file bytes and diff; changes are unstaged; stash is empty.
+Before: c5cf4c433ccb65ea523c3cc5770a55de235ee459
+After:  c5cf4c433ccb65ea523c3cc5770a55de235ee459
+
+$ git log --all --oneline --decorate --graph
+* b5d419c (main) Fix emergency empty-list division by zero
+* 19787fb (HEAD -> feature/expense-summary) Initial demo application and tracked feature placeholder
+
+=== 4: Exact unfinished workspace restored on feature branch ===
+
+Completed repository: /workspace/scratch/b2ce57ca3ed8/emergency-stash-demo/run-hw9nkx/repository
+Evidence: /workspace/scratch/b2ce57ca3ed8/emergency-stash-demo/run-hw9nkx/transcript.txt
