@@ -4,7 +4,7 @@ A working Git classroom demo: leave 20 unfinished lines unstaged, stash them,
 switch to main, commit an emergency fix, return to the feature branch, and pop
 the stash to restore the exact working state.
 
-## Run on macOS
+## Run The File 
 
 Open Terminal and run:
 
