@@ -34,6 +34,40 @@ The final output identifies the generated repository and transcript.txt. Open
 that generated repository in Terminal to inspect git status, git diff and
 git log --all --oneline --decorate --graph.
 
+
+## Demo evidence
+
+The following screenshots are the required evidence for the emergency context-switching workflow.
+
+### 1. Unfinished work is safely stashed and the workspace is clean
+
+![Stash created and main working tree clean](docs/images/01-stash-and-clean-main.jpg)
+
+The feature work was saved with `git stash push`. The output of `git stash list`
+shows `stash@{0}`, confirming that the unfinished 20-line feature is stored.
+After switching to `main`, `git status` reports `nothing to commit, working
+tree clean`. This makes it safe to work on the urgent bug.
+
+### 2. Emergency fix is committed while the feature stash is retained
+
+![Emergency bug fix committed on main](docs/images/02-emergency-fix-committed.jpg)
+
+The diff shows the urgent fix in `app.py`: an empty list now returns zero instead
+of causing division by zero. Only that file was staged and committed on `main`.
+The clean status proves the fix is fully committed, while `git stash list` proves
+the unfinished feature is still stored safely.
+
+### 3. Original unfinished work is restored as unstaged changes
+
+![Stashed feature restored as unstaged changes](docs/images/03-stash-restored.jpg)
+
+After switching back to `feature/expense-summary`, `git stash list` shows the
+saved work and `git stash pop` restores it. `git status` places `feature.py`
+under “Changes not staged for commit,” and `git diff --numstat` reports 20 added
+lines. The identical before-and-after hashes prove that the exact workspace was
+restored. The second `git stash list` has no output because a successful pop
+removes the stash entry.
+
 ## Published branches
 
 - main contains the emergency empty-list division fix in app.py.
